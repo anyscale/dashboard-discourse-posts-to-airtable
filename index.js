@@ -1,14 +1,9 @@
 const Airtable = require("airtable");
-const { Octokit } = require("@octokit/core");
-const { paginateRest } = require("@octokit/plugin-paginate-rest");
 require("dotenv").config();
 
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.AIRTABLE_BASE_ID
 )(process.env.AIRTABLE_TABLE_ID);
-const octokit = new (Octokit.plugin(paginateRest))({
-  auth: process.env.GH_API_TOKEN,
-});
 
 async function main() {
   const topicIDToRecord = {};
@@ -30,8 +25,7 @@ async function main() {
     for (const topic of response.data.topic_list.topics) {
       discourseTopics[topic.id.toString()] = {
         fields: {
-          URL: "https://discuss.ray.io/t"+"/"+topic.slug+"/"+topic.id,
-          ID: topic.id,
+          Link: "https://discuss.ray.io/t"+"/"+topic.slug+"/"+topic.id,
           Title: topic.title,
           CreatedAt: topic.created_at,
           UpdatedAt: topic.last_posted_at,
@@ -60,7 +54,7 @@ async function main() {
   console.log(`Updating ${recordToUpdate.length} records`);
   for (let i = 0; i < recordToUpdate.length; i += 10) {
     const chunk = recordToUpdate.slice(i, i + 10).map((record) => ({
-      id: topicIDToRecord[record.fields["URL"].toString()],
+      id: topicIDToRecord[record.fields["Link"].toString()],
       fields: record.fields,
     }));
     await base.replace(chunk, {
