@@ -20,8 +20,8 @@ async function main() {
   );
 
   const discourseTopics = {};
-  for await (const response = fetch('https://discuss.ray.io/c/dashboard/9.json')
-  ) {
+  const response = fetch('https://discuss.ray.io/c/dashboard/9.json')
+  {
     for (const topic of response.data.topic_list.topics) {
       discourseTopics[topic.id.toString()] = {
         fields: {
